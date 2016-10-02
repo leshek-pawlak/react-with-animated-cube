@@ -7,6 +7,10 @@ var HtmlWebpackPlugin = require('html-webpack-plugin')
 var ExtractTextPlugin = require('extract-text-webpack-plugin')
 var CopyWebpackPlugin = require('copy-webpack-plugin')
 
+var Dashboard = require('webpack-dashboard')
+var DashboardPlugin = require('webpack-dashboard/plugin')
+var dashboard = new Dashboard()
+
 module.exports = function makeWebpackConfig(options) {
     /**
      * Environment type
@@ -64,7 +68,7 @@ module.exports = function makeWebpackConfig(options) {
             exclude: /node_modules/,
         }, {
             test: /\.css$/,
-            loader: 'style-loader!css-loader!postcss-loader',
+            loader: 'style-loader!css-loader',
         }, {
             test: /\.(png|jpg|jpeg|gif|svg|woff|woff2|ttf|eot)$/,
             loader: 'file',
@@ -80,25 +84,6 @@ module.exports = function makeWebpackConfig(options) {
                 amd: 'react',
             },
         },
-    }
-
-    /**
-     * PostCSS configuration
-     */
-    config.postcss = function(webpack) {
-        return [
-            require('postcss-import')({
-                async: true,
-                addDependencyTo: webpack,
-            }),
-            require('autoprefixer')({
-                browsers: ['last 2 versions'],
-            }),
-            require('postcss-font-magician')(),
-            require('postcss-nested')(),
-            require('postcss-quantity-queries')(),
-            require('postcss-extend')(),
-        ]
     }
 
     /**
@@ -120,7 +105,8 @@ module.exports = function makeWebpackConfig(options) {
         config.plugins.push(
             new WebpackNotifierPlugin({
                 title: 'my page compilation',
-            })
+            }),
+            new DashboardPlugin(dashboard.setData)
         )
     }
 
@@ -141,14 +127,17 @@ module.exports = function makeWebpackConfig(options) {
      * Dev server configuration
      */
     config.devServer = {
-        contentBase: './public',
+        contentBase: './',
+        noInfo: true,
+        quiet: true,
         stats: {
             modules: false,
             cached: false,
-            colors: true,
+            colors: false,
             chunk: false,
         },
     }
+
 
     return config
 }

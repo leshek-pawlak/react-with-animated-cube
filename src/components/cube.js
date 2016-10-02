@@ -3,28 +3,52 @@
 /* eslint no-undef: */
 /* eslint wrap-iife: */
 
-var container, camera, scene, renderer, cube
-var targetRotationX = -0.72
-var targetRotationY = 0.50
-var targetRotationXOnMouseDown = 0
-var targetRotationYOnMouseDown = 0
-var mouseX = 0
-var mouseY = 0
-var mouseXOnMouseDown = 0
-var mouseYOnMouseDown = 0
-var windowHalfX = window.innerWidth / 2
-var windowHalfY = window.innerHeight / 2
+import THREE from 'three-canvas-renderer'
 
-var init = function() {
+import bitnoisePng from '../images/bitnoise.png'
+import brandedmePng from '../images/brandedme.png'
+import codepenPng from '../images/codepen.png'
+import githubPng from '../images/github.png'
+import linkedinPng from '../images/linkedin.png'
+import twitterPng from '../images/twitter.png'
+
+var container, camera, scene, renderer, cube, raycaster, vector
+var materials = []
+var mouse = { x: 0, y: 0 }
+var mouseMouseDown = { x: 0, y: 0 }
+var targetRotation = { x: -0.72, y: 0.50 }
+var targetRotationMouseDown = { x: 0, y: 0 }
+var windowHalf = { x: window.innerWidth / 2, y: window.innerHeight / 2 }
+var links = [
+    'http://bitnoi.se',
+    'https://branded.me/leshek_pawlak',
+    'http://codepen.io/leshek_pawlak',
+    'https://github.com/leshek-pawlak',
+    'https://www.linkedin.com/in/leszekpawlak',
+    'https://twitter.com/leshek_pawlak',
+]
+var textures = [
+    bitnoisePng,
+    brandedmePng,
+    codepenPng,
+    githubPng,
+    linkedinPng,
+    twitterPng,
+]
+
+init()
+animate()
+
+function init() {
     container = document.createElement('div')
-    document.getElementById('cubeAnimation').appendChild(container)
+    document.body.appendChild(container)
 
     var info = document.createElement('div')
     info.style.position = 'absolute'
     info.style.top = '10px'
     info.style.width = '100%'
     info.style.textAlign = 'center'
-    info.innerHTML = 'Drag to spin the cube'
+    info.innerHTML = '<p>Drag to spin the cube or select in ReactMaterialSelect</p><p>Double click on the cube site to go to the page</p>'
     container.appendChild(info)
 
     camera = new THREE.PerspectiveCamera(70, window.innerWidth / window.innerHeight, 1, 1000)
@@ -37,9 +61,15 @@ var init = function() {
     var geometry = new THREE.BoxGeometry(300, 300, 300)
     var textureLoader = new THREE.TextureLoader()
 
-    var texture = [textureLoader.load('http://lesyek.usermd.net/bitnoise.png'), textureLoader.load('http://lesyek.usermd.net/brandedme.png'), textureLoader.load('http://lesyek.usermd.net/codepen.png'), textureLoader.load('http://lesyek.usermd.net/github.png'), textureLoader.load('http://lesyek.usermd.net/linkedin.png'), textureLoader.load('http://lesyek.usermd.net/twitter.png')]
+    var texture = []
+    for (var k = 0; k < textures.length; k++) {
+        texture.push(textureLoader.load(textures[k]))
+        links.push(textureLoader.load(textures[k]))
+    }
 
-    var materials = []
+    raycaster = new THREE.Raycaster()
+    vector = new THREE.Vector2()
+
     for (var i = 0; i < 6; ++i) {
         materials[i] = new THREE.MeshBasicMaterial({
             map: texture[i],
@@ -58,6 +88,7 @@ var init = function() {
     renderer.setSize(window.innerWidth, window.innerHeight)
     container.appendChild(renderer.domElement)
 
+    document.addEventListener('dblclick', onCubeClick, false)
     document.addEventListener('mousedown', onDocumentMouseDown, false)
     document.addEventListener('touchstart', onDocumentTouchStart, false)
     document.addEventListener('touchmove', onDocumentTouchMove, false)
@@ -65,9 +96,9 @@ var init = function() {
     window.addEventListener('resize', onWindowResize, false)
 }
 
-var onWindowResize = function() {
-    windowHalfX = window.innerWidth / 2
-    windowHalfY = window.innerHeight / 2
+function onWindowResize() {
+    windowHalf.x = window.innerWidth / 2
+    windowHalf.y = window.innerHeight / 2
 
     camera.aspect = window.innerWidth / window.innerHeight
     camera.updateProjectionMatrix()
@@ -75,67 +106,83 @@ var onWindowResize = function() {
     renderer.setSize(window.innerWidth, window.innerHeight)
 }
 
-var onDocumentMouseDown = function(event) {
+function onCubeClick(event) {
+    vector.x = (event.clientX / window.innerWidth) * 2 - 1
+    vector.y = - (event.clientY / window.innerHeight) * 2 + 1
+
+    raycaster.setFromCamera(vector, camera)
+
+    var intersects = raycaster.intersectObjects(scene.children)
+    if (intersects.length === 1) {
+        window.location.href = links[intersects[0].face.materialIndex]
+    }
+}
+
+function onDocumentMouseDown(event) {
     event.preventDefault()
+
     document.addEventListener('mousemove', onDocumentMouseMove, false)
     document.addEventListener('mouseup', onDocumentMouseUp, false)
     document.addEventListener('mouseout', onDocumentMouseOut, false)
 
-    mouseXOnMouseDown = event.clientX - windowHalfX
-    mouseYOnMouseDown = event.clientY - windowHalfY
-    targetRotationXOnMouseDown = targetRotationX
-    targetRotationYOnMouseDown = targetRotationY
+    mouseMouseDown.x = event.clientX - windowHalf.x
+    mouseMouseDown.y = event.clientY - windowHalf.y
+
+    targetRotationMouseDown.x = targetRotation.x
+    targetRotationMouseDown.y = targetRotation.y
 }
 
-var onDocumentMouseMove = function(event) {
-    mouseX = event.clientX - windowHalfX
-    mouseY = event.clientY - windowHalfY
-    targetRotationX = targetRotationXOnMouseDown + (mouseX - mouseXOnMouseDown) * 0.02
-    targetRotationY = targetRotationYOnMouseDown + (mouseY - mouseYOnMouseDown) * 0.02
+function onDocumentMouseMove(event) {
+    mouse.x = event.clientX - windowHalf.x
+    mouse.y = event.clientY - windowHalf.y
+
+    targetRotation.x = targetRotationMouseDown.x + (mouse.x - mouseMouseDown.x) * 0.02
+    targetRotation.y = targetRotationMouseDown.y + (mouse.y - mouseMouseDown.y) * 0.02
 }
 
-var onDocumentMouseUp = function(event) {
+function onDocumentMouseUp(event) {
     document.removeEventListener('mousemove', onDocumentMouseMove, false)
     document.removeEventListener('mouseup', onDocumentMouseUp, false)
     document.removeEventListener('mouseout', onDocumentMouseOut, false)
 }
 
-var onDocumentMouseOut = function(event) {
+function onDocumentMouseOut(event) {
     document.removeEventListener('mousemove', onDocumentMouseMove, false)
     document.removeEventListener('mouseup', onDocumentMouseUp, false)
     document.removeEventListener('mouseout', onDocumentMouseOut, false)
 }
 
-var onDocumentTouchStart = function(event) {
+function onDocumentTouchStart(event) {
     if (event.touches.length === 1) {
         event.preventDefault()
-        mouseXOnMouseDown = event.touches[0].pageX - windowHalfX
-        mouseYOnMouseDown = event.touches[0].pageY - windowHalfY
-        targetRotationXOnMouseDown = targetRotationX
-        targetRotationYOnMouseDown = targetRotationY
+        targetRotation.x = event.touches[0].pageX - windowHalf.x
+        targetRotation.y = event.touches[0].pageY - windowHalf.y
+        targetRotationMouseDown.x = targetRotation.x
+        targetRotationMouseDown.y = targetRotation.y
     }
 }
 
-var onDocumentTouchMove = function(event) {
+function onDocumentTouchMove(event) {
     if (event.touches.length === 1) {
         event.preventDefault()
-        mouseX = event.touches[0].pageX - windowHalfX
-        mouseY = event.touches[0].pageY - windowHalfY
-        targetRotationX = targetRotationXOnMouseDown + (mouseX - mouseXOnMouseDown) * 0.05
-        targetRotationY = targetRotationYOnMouseDown + (mouseY - mouseYOnMouseDown) * 0.05
+        mouse.x = event.touches[0].pageX - windowHalf.x
+        mouse.y = event.touches[0].pageY - windowHalf.y
+        targetRotation.x = targetRotationMouseDown.x + (mouse.x - mouseMouseDown.x) * 0.05
+        targetRotation.y = targetRotationMouseDown.y + (mouse.y - mouseMouseDown.y) * 0.05
     }
 }
 
-var animate = function() {
+function animate() {
     requestAnimationFrame(animate)
     render()
 }
 
-var render = function() {
-    cube.rotation.y += (targetRotationX - cube.rotation.y) * 0.05
-    cube.rotation.x += (targetRotationY - cube.rotation.x) * 0.05
+function render() {
+    cube.rotation.y += (targetRotation.x - cube.rotation.y) * 0.05
+    cube.rotation.x += (targetRotation.y - cube.rotation.x) * 0.05
     renderer.render(scene, camera)
-}(function() {
-    init()
-    animate()
-})()
+}
+
+export default function setTargetRotation(newTargetRotation) {
+    targetRotation = newTargetRotation
+}

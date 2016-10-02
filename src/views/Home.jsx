@@ -1,21 +1,31 @@
+/* eslint no-undef: */
+
 import React, { Component } from 'react'
 import { Layout, Content, Grid, Cell } from 'react-mdl'
-import { ReactMaterialSelect } from 'react-material-select'
-import 'components/cube.js'
+import ReactMaterialSelect from 'react-material-select'
+
+import 'components/cube'
+import setTargetRotation from 'components/cube'
 
 class Home extends Component {
     constructor() {
         super()
 
-        this.state = {
-            selected: {},
+        this.targetRotationPerSelect = {
+            linkedin: {x: -0.019999999999999907, y: 0.12},
+            codepen: {x: 12.559999999999999, y: -4.619999999999999},
+            github: {x: 6.279999999999999, y: -1.46},
+            bitnoise: {x: -1.58, y: 0.14},
+            brandedme: {x: 1.56, y: 0.09999999999999999},
+            twitter: {x: 3.12, y: 0.08000000000000002},
         }
 
         this.callbackFunction = this.callbackFunction.bind(this)
     }
 
     callbackFunction(selected) {
-        this.setState({selected: selected})
+        // change cube site on select
+        setTargetRotation(this.targetRotationPerSelect[selected.value])
     }
 
     render() {
@@ -23,7 +33,7 @@ class Home extends Component {
             <Layout>
                <Content>
                     <Grid>
-                        <Cell col={12} id="cubeAnimation"></Cell>
+                        <Cell col={12} style={{ height: 570 }}></Cell>
                         <Cell col={12}>
                             <ReactMaterialSelect label="Choose social media" resetLabel={false} onChange={this.callbackFunction.bind(this)}>
                                 <option dataValue="linkedin">Linkedin</option>

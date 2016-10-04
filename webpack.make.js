@@ -49,7 +49,11 @@ module.exports = function makeWebpackConfig(options) {
     /**
      * Devtool configuration
      */
-    config.devtool = 'source-map'
+    if (BUILD) {
+        config.devtool = 'source-map'
+    } else {
+        config.devtool = 'eval'
+    }
 
     /**
      * Modules configuration
@@ -91,9 +95,6 @@ module.exports = function makeWebpackConfig(options) {
      */
     config.plugins = [
         new webpack.optimize.CommonsChunkPlugin('vendor', BUILD ? 'vendor.[hash].js' : 'vendor.bundle.js'),
-        new ExtractTextPlugin('[name].[hash].css', {
-            disable: !BUILD,
-        }),
         new webpack.optimize.OccurenceOrderPlugin(),
         new HtmlWebpackPlugin({
             template: './src/views/index.html',
@@ -112,14 +113,16 @@ module.exports = function makeWebpackConfig(options) {
 
     if (BUILD) {
         config.plugins.push(
+            new ExtractTextPlugin('[name].[hash].css'),
+            new webpack.EnvironmentPlugin(['NODE_ENV']),
             new webpack.NoErrorsPlugin(),
             new webpack.optimize.DedupePlugin(),
-            new webpack.optimize.UglifyJsPlugin(),
             new CopyWebpackPlugin([
                 {
                     from: './src/views/favicon.ico',
                 },
-            ])
+            ]),
+            new webpack.optimize.UglifyJsPlugin()
         )
     }
 

@@ -15,6 +15,7 @@ import twitterPng from '../images/twitter.png'
 var container, camera, scene, renderer, cube, raycaster, vector
 var materials = []
 var lastTouch = null
+var isMobile = window.innerWidth < 768
 var mouse = { x: 0, y: 0 }
 var mouseMouseDown = { x: 0, y: 0 }
 var targetRotation = { x: -0.72, y: 0.50 }
@@ -45,11 +46,12 @@ function init() {
     document.body.appendChild(container)
 
     var info = document.createElement('div')
+
     info.style.position = 'absolute'
     info.style.top = '10px'
     info.style.width = '100%'
     info.style.textAlign = 'center'
-    info.innerHTML = window.innerWidth < 768 ? '<p>Drag to spin the cube or select in ReactMaterialSelect</p><p>Double tap on the cube site to go to the page</p>' : '<p>Drag to spin the cube or select in ReactMaterialSelect</p><p>Double click on the cube site to go to the page</p>'
+    info.innerHTML = isMobile ? '<p>Drag to spin the cube or select in ReactMaterialSelect</p><p>Double tap on the cube site to go to the page</p>' : '<p>Drag to spin the cube or select in ReactMaterialSelect</p><p>Double click on the cube site to go to the page</p>'
     container.appendChild(info)
 
     camera = new THREE.PerspectiveCamera(70, window.innerWidth / window.innerHeight, 1, 1000)
@@ -59,7 +61,7 @@ function init() {
     scene = new THREE.Scene()
 
     // Cube
-    var geometry = window.innerWidth < 768 ? new THREE.BoxGeometry(150, 150, 150) : new THREE.BoxGeometry(300, 300, 300)
+    var geometry = isMobile ? new THREE.BoxGeometry(150, 150, 150) : new THREE.BoxGeometry(300, 300, 300)
     var textureLoader = new THREE.TextureLoader()
 
     var texture = []
@@ -100,6 +102,11 @@ function init() {
 }
 
 function onWindowResize() {
+    if (window.innerWidth < 768 !== isMobile) {
+        location.reload()
+
+        return
+    }
     windowHalf.x = window.innerWidth / 2
     windowHalf.y = window.innerHeight / 2
 

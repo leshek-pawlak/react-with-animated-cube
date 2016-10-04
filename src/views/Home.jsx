@@ -33,8 +33,8 @@ class Home extends Component {
             <Layout>
                <Content>
                     <Grid>
-                        <Cell col={12} style={{ height: 570 }}></Cell>
-                        <Cell col={12}>
+                        <Cell col={12}></Cell>
+                        <Cell col={12} id="reactMaterialSelect">
                             <ReactMaterialSelect label="Choose social media" resetLabel={false} onChange={this.callbackFunction.bind(this)}>
                                 <option dataValue="linkedin">Linkedin</option>
                                 <option dataValue="codepen">Codepen</option>

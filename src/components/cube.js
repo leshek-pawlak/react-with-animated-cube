@@ -14,6 +14,7 @@ import twitterPng from '../images/twitter.png'
 
 var container, camera, scene, renderer, cube, raycaster, vector
 var materials = []
+var lastTouch = null
 var mouse = { x: 0, y: 0 }
 var mouseMouseDown = { x: 0, y: 0 }
 var targetRotation = { x: -0.72, y: 0.50 }
@@ -48,7 +49,7 @@ function init() {
     info.style.top = '10px'
     info.style.width = '100%'
     info.style.textAlign = 'center'
-    info.innerHTML = '<p>Drag to spin the cube or select in ReactMaterialSelect</p><p>Double click on the cube site to go to the page</p>'
+    info.innerHTML = window.innerWidth < 768 ? '<p>Drag to spin the cube or select in ReactMaterialSelect</p><p>Double tap on the cube site to go to the page</p>' : '<p>Drag to spin the cube or select in ReactMaterialSelect</p><p>Double click on the cube site to go to the page</p>'
     container.appendChild(info)
 
     camera = new THREE.PerspectiveCamera(70, window.innerWidth / window.innerHeight, 1, 1000)
@@ -58,7 +59,7 @@ function init() {
     scene = new THREE.Scene()
 
     // Cube
-    var geometry = new THREE.BoxGeometry(300, 300, 300)
+    var geometry = window.innerWidth < 768 ? new THREE.BoxGeometry(150, 150, 150) : new THREE.BoxGeometry(300, 300, 300)
     var textureLoader = new THREE.TextureLoader()
 
     var texture = []
@@ -90,8 +91,10 @@ function init() {
 
     document.addEventListener('dblclick', onCubeClick, false)
     document.addEventListener('mousedown', onDocumentMouseDown, false)
+
     document.addEventListener('touchstart', onDocumentTouchStart, false)
     document.addEventListener('touchmove', onDocumentTouchMove, false)
+    document.addEventListener('touchend', onDocumentTouchEnd, false)
 
     window.addEventListener('resize', onWindowResize, false)
 }
@@ -107,8 +110,13 @@ function onWindowResize() {
 }
 
 function onCubeClick(event) {
-    vector.x = (event.clientX / window.innerWidth) * 2 - 1
-    vector.y = - (event.clientY / window.innerHeight) * 2 + 1
+    if (event.touches[0]) {
+        vector.x = (event.touches[0].pageX / window.innerWidth) * 2 - 1
+        vector.y = - (event.touches[0].pageY / window.innerHeight) * 2 + 1
+    } else {
+        vector.x = (event.clientX / window.innerWidth) * 2 - 1
+        vector.y = - (event.clientY / window.innerHeight) * 2 + 1
+    }
 
     raycaster.setFromCamera(vector, camera)
 
@@ -153,23 +161,39 @@ function onDocumentMouseOut(event) {
 }
 
 function onDocumentTouchStart(event) {
-    if (event.touches.length === 1) {
+    if (event.touches.length === 1 && event.target.localName === 'div') {
         event.preventDefault()
-        targetRotation.x = event.touches[0].pageX - windowHalf.x
-        targetRotation.y = event.touches[0].pageY - windowHalf.y
-        targetRotationMouseDown.x = targetRotation.x
-        targetRotationMouseDown.y = targetRotation.y
+
+        var now = new Date().getTime()
+        var delta = lastTouch ? now - lastTouch : 0
+
+        if (delta < 300 && delta > 30) {
+            lastTouch = null
+            onCubeClick(event)
+        } else {
+            mouseMouseDown.x = event.touches[0].pageX - windowHalf.x
+            mouseMouseDown.y = event.touches[0].pageY - windowHalf.y
+
+            targetRotationMouseDown.x = targetRotation.x
+            targetRotationMouseDown.y = targetRotation.y
+        }
     }
 }
 
 function onDocumentTouchMove(event) {
     if (event.touches.length === 1) {
         event.preventDefault()
+
         mouse.x = event.touches[0].pageX - windowHalf.x
         mouse.y = event.touches[0].pageY - windowHalf.y
-        targetRotation.x = targetRotationMouseDown.x + (mouse.x - mouseMouseDown.x) * 0.05
-        targetRotation.y = targetRotationMouseDown.y + (mouse.y - mouseMouseDown.y) * 0.05
+
+        targetRotation.x = targetRotationMouseDown.x + (mouse.x - mouseMouseDown.x) * 0.02
+        targetRotation.y = targetRotationMouseDown.y + (mouse.y - mouseMouseDown.y) * 0.02
     }
+}
+
+function onDocumentTouchEnd(event) {
+    lastTouch = new Date().getTime()
 }
 
 function animate() {

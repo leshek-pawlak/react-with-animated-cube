@@ -3,8 +3,9 @@ import { render } from 'react-dom'
 import Home from 'views/Home'
 
 import 'react-material-select/lib/css/reactMaterialSelect.css'
-
 import 'react-mdl/extra/material.css'
+import '../css/main.css'
+
 import 'react-mdl/extra/material.js'
 
 render(

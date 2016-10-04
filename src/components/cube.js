@@ -117,7 +117,7 @@ function onWindowResize() {
 }
 
 function onCubeClick(event) {
-    if (event.touches[0]) {
+    if (event.touches) {
         vector.x = (event.touches[0].pageX / window.innerWidth) * 2 - 1
         vector.y = - (event.touches[0].pageY / window.innerHeight) * 2 + 1
     } else {

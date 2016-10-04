@@ -99,14 +99,14 @@ module.exports = function makeWebpackConfig(options) {
             template: './src/views/index.html',
             inject: 'body',
         }),
+        new DashboardPlugin(dashboard.setData),
     ]
 
     if (!BUILD) {
         config.plugins.push(
             new WebpackNotifierPlugin({
                 title: 'my page compilation',
-            }),
-            new DashboardPlugin(dashboard.setData)
+            })
         )
     }
 

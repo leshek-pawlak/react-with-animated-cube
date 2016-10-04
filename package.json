@@ -12,7 +12,7 @@
   "description": "React + React Material Select + tree.js animated cube.",
   "scripts": {
     "dev": "webpack-dev-server --history-api-fallback --hot --inline --progress",
-    "build": "rimraf dist && NODE_ENV=production webpack --config webpack.build.js"
+    "build": "rimraf dist && NODE_ENV=production webpack -p --config webpack.build.js"
   },
   "repository": {
     "type": "git",

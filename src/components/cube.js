@@ -5,12 +5,12 @@
 
 import THREE from 'three-canvas-renderer'
 
-import bitnoisePng from '../images/bitnoise.png'
-import brandedmePng from '../images/brandedme.png'
-import codepenPng from '../images/codepen.png'
-import githubPng from '../images/github.png'
-import linkedinPng from '../images/linkedin.png'
-import twitterPng from '../images/twitter.png'
+import bitnoisePng from '../images/bitnoise.jpg'
+import brandedmePng from '../images/brandedme.jpg'
+import codepenPng from '../images/codepen.jpg'
+import githubPng from '../images/github.jpg'
+import linkedinPng from '../images/linkedin.jpg'
+import twitterPng from '../images/twitter.jpg'
 
 var container, camera, scene, renderer, cube, raycaster, vector
 var materials = []

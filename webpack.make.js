@@ -7,9 +7,7 @@ var HtmlWebpackPlugin = require('html-webpack-plugin')
 var ExtractTextPlugin = require('extract-text-webpack-plugin')
 var CopyWebpackPlugin = require('copy-webpack-plugin')
 
-var Dashboard = require('webpack-dashboard')
 var DashboardPlugin = require('webpack-dashboard/plugin')
-var dashboard = new Dashboard()
 
 module.exports = function makeWebpackConfig(options) {
     /**
@@ -96,11 +94,11 @@ module.exports = function makeWebpackConfig(options) {
     config.plugins = [
         new webpack.optimize.CommonsChunkPlugin('vendor', BUILD ? 'vendor.[hash].js' : 'vendor.bundle.js'),
         new webpack.optimize.OccurenceOrderPlugin(),
+        new DashboardPlugin(),
         new HtmlWebpackPlugin({
             template: './src/views/index.html',
             inject: 'body',
         }),
-        new DashboardPlugin(dashboard.setData),
     ]
 
     if (!BUILD) {

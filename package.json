@@ -12,7 +12,7 @@
   "description": "React + React Material Select + tree.js animated cube.",
   "scripts": {
     "dev": "webpack-dev-server --history-api-fallback --hot --inline --progress",
-    "build": "rimraf dist && NODE_ENV=production webpack -p --config webpack.build.js"
+    "build": "rimraf dist && NODE_ENV=production webpack -p --config webpack.build.js --progress"
   },
   "repository": {
     "type": "git",
@@ -55,7 +55,7 @@
   "dependencies": {
     "react": "^15.3.2",
     "react-dom": "^15.3.2",
-    "react-material-select": "^1.0.14",
+    "react-material-select": "^1.1.0",
     "react-mdl": "^1.7.2",
     "three": "0.79.0",
     "three-canvas-renderer": "1.0.1"

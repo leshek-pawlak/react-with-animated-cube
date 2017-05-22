@@ -5,12 +5,12 @@
 
 import THREE from 'three-canvas-renderer'
 
-import bitnoisePng from '../images/bitnoise.jpg'
-import brandedmePng from '../images/brandedme.jpg'
-import codepenPng from '../images/codepen.jpg'
-import githubPng from '../images/github.jpg'
-import linkedinPng from '../images/linkedin.jpg'
-import twitterPng from '../images/twitter.jpg'
+import itentegesJpg from '../images/itenteges.jpg'
+import instagramJpg from '../images/instagram.jpg'
+import codepenJpg from '../images/codepen.jpg'
+import githubJpg from '../images/github.jpg'
+import linkedinJpg from '../images/linkedin.jpg'
+import facebookJpg from '../images/facebook.jpg'
 
 var container, camera, scene, renderer, cube, raycaster, vector
 var materials = []
@@ -22,20 +22,20 @@ var targetRotation = { x: -0.72, y: 0.50 }
 var targetRotationMouseDown = { x: 0, y: 0 }
 var windowHalf = { x: window.innerWidth / 2, y: window.innerHeight / 2 }
 var links = [
-    'http://bitnoi.se',
-    'https://branded.me/leshek_pawlak',
+    'http://itenteges.pl',
+    'https://www.instagram.com/itenteges',
     'http://codepen.io/leshek_pawlak',
     'https://github.com/leshek-pawlak',
     'https://www.linkedin.com/in/leszekpawlak',
-    'https://twitter.com/leshek_pawlak',
+    'https://www.facebook.com/itenteges',
 ]
 var textures = [
-    bitnoisePng,
-    brandedmePng,
-    codepenPng,
-    githubPng,
-    linkedinPng,
-    twitterPng,
+    itentegesJpg,
+    instagramJpg,
+    codepenJpg,
+    githubJpg,
+    linkedinJpg,
+    facebookJpg,
 ]
 
 init()
@@ -214,6 +214,10 @@ function render() {
     renderer.render(scene, camera)
 }
 
-export default function setTargetRotation(newTargetRotation) {
-    targetRotation = newTargetRotation
+function setTargetRotation(newTargetRotation) {
+    setTimeout(function() {
+        targetRotation = newTargetRotation
+    })
 }
+
+export default setTargetRotation
